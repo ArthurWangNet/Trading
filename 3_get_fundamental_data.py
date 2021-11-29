@@ -12,7 +12,7 @@ import utilities
 # This function will using td api to get fundamental data for the symbol provided.
 def get_fundamental_update(symbol):
     #TD API limits request to 120 per second. That is maxium 2 request per second, so sleep here.
-    time.sleep(0.5)
+    time.sleep(0.6)
     #Define payload
     payload = {
             'apikey' : api_keys.APIKEY_FUNDAMENTAL,

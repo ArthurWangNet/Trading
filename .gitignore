@@ -135,3 +135,5 @@ Data/
 Vault/
 api_keys.py
 streaming_test.ipynb
+Legacy/
+
