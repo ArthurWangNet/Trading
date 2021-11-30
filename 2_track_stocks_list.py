@@ -18,7 +18,7 @@ def track_stock_list():
 			csv_files.append(os.path.join(Paths.Stocks_List, file))
 	print('Done!')
 
-	# Since the files are sotred in YYYY-MM-DD.csv format, we will just sort the list decreasingly so the latest file is at the top.
+	# Since the files are sotred in YYYY-MM-DD.csv format, we will just sort the list decreasingly so the latest file is on the top.
 	# Now we will readin the latest and previous list to compare the difference.
 	csv_files.sort(reverse=True)
 	print("The latest file is: " + os.path.basename(csv_files[0]))

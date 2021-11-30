@@ -78,3 +78,6 @@ if __name__ == '__main__':
 		print("Update folder moved to archive folder.")
 
 	print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
