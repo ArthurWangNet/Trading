@@ -69,7 +69,12 @@ def track_stock_list():
 	# Update Tracker file.
 	print('Update Tracker file...')
 	tracker = pd.read_csv(Paths.Stocks_List_Tracker)
-	tracker = tracker.append({'Date':base_date,'TotalNum':TotalNum,'Difference Count': DifferenceCount,'Added Stocks':new_stocks,'Missing Stocks':missing_stocks},ignore_index=True)
+	tracker = tracker.append({
+		'Date':base_date,
+		'TotalNum':TotalNum,
+		'Difference Count': DifferenceCount,
+		'Added Stocks':new_stocks,
+		'Missing Stocks':missing_stocks},ignore_index=True)
 	tracker.to_csv(Paths.Stocks_List_Tracker,index=False)
 	print('Done!')
 

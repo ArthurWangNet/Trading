@@ -17,3 +17,15 @@ def get_stock_list():
 	stock_list =  stock_list_df['symbol'].tolist()
 	stock_list.sort()
 	return stock_list
+
+def get_file_name_from_full_path(path):
+	return os.path.basename(path)
+
+def get_symol_name_from_file_name(file_name):
+	os.path.splitext(file_name)[0]
+
+def get_symbol_name_from_full_path(path):
+	return get_symol_name_from_file_name(get_file_name_from_full_path(path))
+
+def list_subfolders(folder):
+	return [f.path for f in os.scandir(folder) if f.is_dir()]

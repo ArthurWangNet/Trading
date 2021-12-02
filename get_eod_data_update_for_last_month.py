@@ -16,11 +16,10 @@ def get_eod_data_from_start(symbol):
 	#Define payload
 	payload = {
 		'apikey': api_keys.APIKEY_DAILY,
-		'periodType' : 'ytd',
+		'periodType' : 'month',
         'period' : '1',
         'frequencyType': 'daily',
-        'frequency':'1',
-		'startDate': '21600000' #This is 1970-01-01
+        'frequency':'1'
 	}
 	endpoint = TD_API.get_price_history_endpoint(symbol)
 
@@ -37,7 +36,9 @@ def get_eod_data_from_start(symbol):
 def get_failed_symbols():
 	# The difference between the update symbols and the stock list is the failed stocks.
 	update_files = [os.path.join(updates_folder, f) for f in os.listdir(updates_folder) if f.endswith('.csv')]
-	update_files_symbols = [f.split('.')[0] for f in os.listdir(updates_folder) if f.endswith('.csv')]
+#	update_files_symbols = os.path.splitext(f for f in update_files) 
+	update_files_symbols = [os.path.splitext(f)[0] for f in [os.path.basename(f) for f in update_files]]
+
 	failed_list = list(set(stock_list) - set(update_files_symbols))
 
 	# Somehow, some stocks come with empty data. The request are successful, but the data is empty. 
@@ -49,7 +50,9 @@ def get_failed_symbols():
 			df = pd.read_csv(csv_file)
 		except pd.errors.EmptyDataError:
 			# get only file name without path, without extension, only the symbol.
-			empty_files.append(os.path.basename(csv_file).split('.')[0])
+			# WARNING: don't use split('.') since there will be . in symbol.
+			# empty_files.append(os.path.basename(csv_file).split('.')[0])
+			empty_files.append(os.path.splitext(os.path.basename(csv_file))[0])
 	
 	# Combine the failed list and the empty files.
 	retry_list = failed_list + empty_files
