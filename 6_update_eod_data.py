@@ -39,7 +39,6 @@ def get_empty_files(csv_file):
 
 
 
-
 if __name__ == '__main__':
 	print("script start at :", datetime.datetime.now())
 	script_start_time = time.time()
