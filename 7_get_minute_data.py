@@ -110,10 +110,7 @@ if __name__ == '__main__':
         with open(os.path.join(Paths.Minute_Data_Failed_List, today + '.txt'), 'w') as f:
             for symbol in failed_symobls:
                 f.write(symbol + '\n')
-    print("--- %s seconds ---" % (time.time() - start_time))
-
-    
-            
+    print("--- %s seconds ---" % str(time.time() - start_time))
 
     
 
