@@ -1,0 +1,31 @@
+multiprocessing.pool.RemoteTraceback:
+"""
+Traceback (most recent call last):
+  File "/Users/Arthur/.pyenv/versions/3.10.2/lib/python3.10/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/Users/Arthur/Developer/Trading/6_update_eod_data.py", line 22, in update_eod_data
+    df_update['datetime'] = df_update['timestamp'].apply(lambda x: time_utilities.epoch_to_eastern(x))
+  File "/Users/Arthur/Developer/Trading/venv/lib/python3.10/site-packages/pandas/core/series.py", line 4430, in apply
+    return SeriesApply(self, func, convert_dtype, args, kwargs).apply()
+  File "/Users/Arthur/Developer/Trading/venv/lib/python3.10/site-packages/pandas/core/apply.py", line 1082, in apply
+    return self.apply_standard()
+  File "/Users/Arthur/Developer/Trading/venv/lib/python3.10/site-packages/pandas/core/apply.py", line 1137, in apply_standard
+    mapped = lib.map_infer(
+  File "pandas/_libs/lib.pyx", line 2870, in pandas._libs.lib.map_infer
+  File "/Users/Arthur/Developer/Trading/6_update_eod_data.py", line 22, in <lambda>
+    df_update['datetime'] = df_update['timestamp'].apply(lambda x: time_utilities.epoch_to_eastern(x))
+  File "/Users/Arthur/Developer/Trading/time_utilities.py", line 16, in epoch_to_eastern
+    dt = datetime.datetime.fromtimestamp(epoch_time/1000, tz)
+ValueError: Invalid value NaN (not a number)
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/Arthur/Developer/Trading/6_update_eod_data.py", line 107, in <module>
+    for _ in tqdm.tqdm(pool.imap_unordered(update_eod_data, working_files), total=len(working_files)):
+  File "/Users/Arthur/Developer/Trading/venv/lib/python3.10/site-packages/tqdm/std.py", line 1180, in __iter__
+    for obj in iterable:
+  File "/Users/Arthur/.pyenv/versions/3.10.2/lib/python3.10/multiprocessing/pool.py", line 870, in next
+    raise value
+ValueError: Invalid value NaN (not a number)

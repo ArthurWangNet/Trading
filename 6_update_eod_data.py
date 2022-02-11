@@ -1,16 +1,18 @@
 import os
 import time
 import datetime
+from joblib import Parallel
 import pandas as pd
 import numpy as np
 import requests
 import json
+import multiprocessing as mp
 from multiprocessing import Pool
 import Paths
 import time_utilities
 import utilities
 import tqdm
-
+from joblib import Parallel, delayed
 
 def update_eod_data(csv_file):
 	try:
@@ -18,7 +20,10 @@ def update_eod_data(csv_file):
 		# Rename 'datetime' column to 'timestamp'
 		df_update.rename(columns={'datetime': 'timestamp'}, inplace=True)
 		# Convert timestamp to datetime
-		df_update['datetime'] = df_update['timestamp'].apply(lambda x: time_utilities.epoch_to_eastern(x))
+		if not df_update['timestamp'].isnull().any(): #Sometimes the data comes in corrupted and the timestamp is null, this will cause script to crash.
+			df_update['datetime'] = df_update['timestamp'].apply(lambda x: time_utilities.epoch_to_eastern(x))
+		else:
+			return
 		# sort by timestamp in descending order and save to csv
 		df_update.sort_values(by=['timestamp'], ascending=False, inplace=True)
 		# Save csv to production folder
@@ -44,6 +49,7 @@ if __name__ == '__main__':
 	script_start_time = time.time()
 	update_folders = utilities.list_subfolders(Paths.Daily_Data_Update_Folder) #This retruns full paths of the folders.
 	update_folders.sort()
+#	mp.set_start_method('fork', force=True)
 
 	for folder in update_folders:
 		update_time_stamp = folder.split('/')[-1]
@@ -58,11 +64,16 @@ if __name__ == '__main__':
 		# We will get empty files first, it only takes around 20s so I won't use multiprocessing here.
 		print("Checking empty files...: ")
 		empty_files = []
-		pool = Pool(processes=os.cpu_count())	
-		empty_files = [f for f in tqdm.tqdm(pool.imap_unordered(get_empty_files, update_csv_files), total=len(update_csv_files))]
-		#empty_files = pool.map(get_empty_files, update_csv_files)
-		pool.close()
-		pool.join()
+
+		#Rewrite to joblib version.
+		Parallel(n_jobs=mp.cpu_count())(delayed(get_empty_files)(csv_file) for csv_file in tqdm.tqdm(update_csv_files))
+
+		# pool = mp.Pool(processes=os.cpu_count())	
+		# empty_files = [f for f in tqdm.tqdm(pool.imap_unordered(get_empty_files, update_csv_files), total=len(update_csv_files))]
+		# #empty_files = pool.map(get_empty_files, update_csv_files)
+		# pool.close()
+		# pool.join()
+
 		empty_files = [f for f in empty_files if f is not None]
 		#empty_files = result.get(p.get() for p in result)
 		
@@ -94,16 +105,21 @@ if __name__ == '__main__':
 			'Empty Symbol': empty_files,
 			'New Empty Symbol': new_empty_symbol
 		}, ignore_index=True)
+		#tracker = pd.concat(tracker, tracker_update, ignore_index=True)
 		tracker.to_csv(Paths.Daily_Data_Tracker, index=False)
 
 		# Now we can start to update the data.
 		start_time = time.time()
 		print("Start multiprocessing data in folder " + folder + " at " + str(datetime.datetime.now()))
-		pool = Pool(os.cpu_count())
-		for _ in tqdm.tqdm(pool.imap_unordered(update_eod_data, working_files), total=len(working_files)):
-			pass
-		pool.close()
-		pool.join()
+
+		# Rewrite to joblib version.
+		Parallel(n_jobs=mp.cpu_count())(delayed(update_eod_data)(csv_file) for csv_file in tqdm.tqdm(working_files))
+
+		# pool = mp.Pool(os.cpu_count())
+		# for _ in tqdm.tqdm(pool.imap_unordered(update_eod_data, working_files), total=len(working_files)):
+		# 	pass
+		# pool.close()
+		# pool.join()
 		end_time = time.time()
 		print("Time taken to process data in folder " + folder + " is" +  str(end_time - start_time))
 
