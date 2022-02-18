@@ -35,6 +35,8 @@ def get_stock_list_from_td():
     print('Getting stock list from TdAmeritrade API...')
     response = requests.get(endpoint, params=payload)
     content = response.content
+    # Update 2022-02-17: Somehow the content become a byte array start with b', so we need to decode it.
+    content = content.decode('utf-8')
     print('Done!')
 
     # Parse json content

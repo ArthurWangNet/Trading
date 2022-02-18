@@ -1,7 +1,10 @@
+from click import progressbar
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+
+from tqdm import tqdm
 import Paths
 import TD_API
 import api_keys
@@ -47,10 +50,12 @@ After 4 tries, the remaining stocks will be write to fail list file, stamped wit
 for i in range(4):
 	print('Try {}'.format(i))
 	stock_list_length = len(stock_list)
-	for symbol in stock_list:
+	progressbar = tqdm(stock_list)
+	for symbol in progressbar:
 		# print progress of the process
-		percentage = round(100*(stock_list_length-len(stock_list))/stock_list_length)
-		print('Working on ' + symbol + ' ' + str(percentage) + '%' + ': {}/{}'.format(stock_list.index(symbol), len(stock_list)))
+		#percentage = round(100*(stock_list_length-len(stock_list))/stock_list_length)
+		#print('Working on ' + symbol + ' ' + str(percentage) + '%' + ': {}/{}'.format(stock_list.index(symbol), len(stock_list)))
+		progressbar.set_description("Requesting %s" % symbol)
 		try:
 			df = get_fundamental_update(symbol)
 			df.to_csv(os.path.join(updates_folder, symbol + '.csv'))
